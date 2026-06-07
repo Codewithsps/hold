@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payment Required — Codewithsps</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-base:    #0e0a14;
+    --bg-glow-l:  #2a0d1a;
+    --bg-glow-r:  #1a0a2e;
+    --text:       #ffffff;
+    --muted:      rgba(255,255,255,.45);
+    --dim:        rgba(255,255,255,.12);
+    --rule:       rgba(255,255,255,.1);
+    --orange:     #e8622a;
+    --orange-bg:  rgba(232,98,42,.12);
+    --orange-bdr: rgba(232,98,42,.35);
+    --red:        #d94f4f;
+    --red-bg:     rgba(217,79,79,.1);
+    --red-bdr:    rgba(217,79,79,.3);
+    --green:      #4caf82;
+    --green-bg:   rgba(76,175,130,.08);
+    --green-bdr:  rgba(76,175,130,.22);
+    --card:       rgba(255,255,255,.04);
+    --card-hover: rgba(255,255,255,.07);
+    --card-bdr:   rgba(255,255,255,.08);
+    --card-bdr-h: rgba(255,255,255,.18);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-base);
+    /* Exact radial gradient from screenshot — deep maroon left, deep purple right */
+    background-image:
+      radial-gradient(ellipse 60% 70% at 0% 50%, #1f0912 0%, transparent 60%),
+      radial-gradient(ellipse 55% 70% at 100% 50%, #140723 0%, transparent 60%),
+      radial-gradient(ellipse 80% 60% at 50% 100%, #1a0820 0%, transparent 70%);
+    background-attachment: fixed;
+    color: var(--text);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── TOP ALERT ── */
+  .topbar {
+    border-bottom: 1px solid var(--red-bdr);
+    background: var(--red-bg);
+    color: #ff8a8a;
+    text-align: center;
+    padding: 10px 1rem;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+
+  /* ── NAV ── */
+  nav {
+    border-bottom: 1px solid var(--rule);
+    padding: 1.2rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .nav-brand {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -.01em;
+  }
+  .nav-brand span {
+    color: var(--muted);
+    font-weight: 300;
+  }
+  .nav-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--red);
+    background: var(--red-bg);
+    border: 1px solid var(--red-bdr);
+    padding: 5px 12px;
+    border-radius: 100px;
+  }
+  .blink {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--red);
+    animation: bl 1.4s step-start infinite;
+    flex-shrink: 0;
+  }
+  @keyframes bl { 50% { opacity: 0; } }
+
+  /* ── PAGE WRAPPER ── */
+  .page {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 5rem 2rem 7rem;
+    animation: up .55s cubic-bezier(.22,1,.36,1) both;
+  }
+  @keyframes up {
+    from { opacity: 0; transform: translateY(22px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── HERO ── */
+  .hero { margin-bottom: 4rem; }
+
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--orange);
+    margin-bottom: 1.4rem;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.4rem, 7vw, 3.8rem);
+    font-weight: 300;
+    line-height: 1.1;
+    letter-spacing: -.025em;
+    color: var(--text);
+    margin-bottom: .4rem;
+  }
+  .hero h1 strong {
+    font-weight: 700;
+    display: block;
+  }
+
+  .hero p {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.75;
+    max-width: 460px;
+    font-weight: 300;
+    margin-top: 1.4rem;
+  }
+
+  /* ── RULE ── */
+  .rule { height: 1px; background: var(--rule); margin: 3rem 0; }
+
+  /* ── AMOUNT ROW ── */
+  .amount-block {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+    padding-bottom: 3rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .amt-lbl {
+    font-size: 11px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .amt-val {
+    font-size: clamp(2.5rem, 8vw, 4rem);
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -.03em;
+    line-height: 1;
+  }
+  .amt-right { text-align: right; }
+  .due-date {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .due-sub {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 500;
+    letter-spacing: .04em;
+  }
+
+  /* ── SECTION LABEL (orange, like "CAREERS") ── */
+  .sec-lbl {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--orange);
+    margin-bottom: 1.4rem;
+  }
+
+  /* ── COUNTDOWN ── */
+  .cd-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 3.5rem;
+    flex-wrap: wrap;
+  }
+  .cd-box {
+    flex: 1;
+    min-width: 60px;
+    background: var(--card);
+    border: 1px solid var(--card-bdr);
+    border-radius: 6px;
+    padding: 16px 10px 13px;
+    text-align: center;
+    backdrop-filter: blur(4px);
+  }
+  .cd-n {
+    font-size: clamp(1.6rem, 5vw, 2rem);
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1;
+    display: block;
+    letter-spacing: -.02em;
+  }
+  .cd-l {
+    font-size: 9px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 6px;
+    display: block;
+  }
+
+  /* ── PAUSED LIST (like job list rows) ── */
+  .paused-list { margin-bottom: 3.5rem; }
+  .paused-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--rule);
+    gap: 1rem;
+  }
+  .paused-row:first-child { border-top: 1px solid var(--rule); }
+  .paused-name {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 3px;
+  }
+  .paused-sub {
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .paused-badge {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    padding: 4px 9px;
+    border-radius: 4px;
+    background: var(--red-bg);
+    color: var(--red);
+    border: 1px solid var(--red-bdr);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* ── UPI SECTION ── */
+  .upi-wrap {
+    background: var(--card);
+    border: 1px solid var(--card-bdr);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+    backdrop-filter: blur(6px);
+    transition: border-color .2s;
+  }
+  .upi-wrap:hover { border-color: var(--card-bdr-h); }
+
+  .upi-head {
+    padding: 14px 22px;
+    border-bottom: 1px solid var(--rule);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .upi-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--text);
+  }
+  .instant-tag {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--green);
+    background: var(--green-bg);
+    border: 1px solid var(--green-bdr);
+    padding: 4px 9px;
+    border-radius: 100px;
+  }
+
+  .upi-body { padding: 1.8rem 1.6rem; }
+
+  .upi-id {
+    font-size: clamp(1.4rem, 4vw, 2rem);
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -.02em;
+    margin-bottom: 6px;
+  }
+  .upi-hint {
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 300;
+    margin-bottom: 1.4rem;
+    line-height: 1.65;
+  }
+
+  .copy-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 1.2rem;
+    flex-wrap: wrap;
+  }
+  .copy-field {
+    flex: 1;
+    min-width: 180px;
+    background: rgba(255,255,255,.06);
+    border: 1px solid var(--card-bdr);
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    letter-spacing: .01em;
+  }
+  .copy-btn {
+    flex-shrink: 0;
+    background: var(--orange);
+    border: none;
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: opacity .18s, transform .15s;
+  }
+  .copy-btn:hover { opacity: .85; transform: translateY(-1px); }
+  .copy-btn.ok { background: var(--green); }
+
+  .apps-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .app-chip {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: .04em;
+    padding: 5px 11px;
+    border-radius: 4px;
+    background: rgba(255,255,255,.06);
+    border: 1px solid var(--card-bdr);
+    color: var(--muted);
+  }
+
+  /* ── BANK CARD ── */
+  .bank-wrap {
+    background: var(--card);
+    border: 1px solid var(--card-bdr);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 3rem;
+    backdrop-filter: blur(6px);
+    transition: border-color .2s;
+  }
+  .bank-wrap:hover { border-color: var(--card-bdr-h); }
+  .bank-head {
+    padding: 14px 22px;
+    border-bottom: 1px solid var(--rule);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--text);
+  }
+  .bank-rows { padding: 0 22px; }
+  .br {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--rule);
+    gap: .5rem;
+  }
+  .br:last-child { border: none; }
+  .br-k {
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 300;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .br-v {
+    font-size: 13px;
+    color: var(--text);
+    font-weight: 500;
+    text-align: right;
+    word-break: break-all;
+  }
+  .ic {
+    flex-shrink: 0;
+    margin-left: 8px;
+    background: none;
+    border: 1px solid var(--card-bdr);
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 600;
+    padding: 4px 9px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: .04em;
+    transition: all .15s;
+  }
+  .ic:hover { border-color: var(--orange); color: var(--orange); }
+  .ic.ok { border-color: var(--green); color: var(--green); }
+
+  /* ── AFTER PAY ── */
+  .after-note {
+    background: var(--green-bg);
+    border: 1px solid var(--green-bdr);
+    border-radius: 8px;
+    padding: 1.3rem 1.6rem;
+    font-size: 13.5px;
+    color: rgba(255,255,255,.55);
+    line-height: 1.8;
+    font-weight: 300;
+    margin-bottom: 3rem;
+  }
+  .after-note strong { color: var(--text); font-weight: 600; }
+  .after-note a { color: var(--orange); text-decoration: none; }
+  .after-note a:hover { color: #fff; }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--rule);
+    padding-top: 1.8rem;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: .6rem;
+  }
+  .f-brand { font-size: 15px; font-weight: 600; color: var(--text); }
+  .f-links { font-size: 12px; color: var(--muted); font-weight: 300; }
+  .f-links a { color: var(--muted); text-decoration: none; transition: color .15s; }
+  .f-links a:hover { color: var(--text); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 540px) {
+    nav { padding: 1rem 1.2rem; }
+    .page { padding: 3rem 1.2rem 5rem; }
+    .amount-block { flex-direction: column; align-items: flex-start; }
+    .amt-right { text-align: left; }
+    .copy-row { flex-direction: column; }
+    .copy-btn { width: 100%; text-align: center; }
+    footer { flex-direction: column; }
+  }
+
+  @media (max-width: 360px) {
+    .hero h1 { font-size: 2rem; }
+    .cd-row { gap: 6px; }
+    .cd-box { min-width: 52px; padding: 12px 6px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP ALERT -->
+<div class="topbar">⚠ &nbsp; Payment Required </div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">Codewithsps <span>/ billing</span></div>
+  <div class="nav-pill"><span class="blink"></span> Suspended</div>
+</nav>
+
+<!-- PAGE -->
+<div class="page">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="tag">Payment Required</div>
+    <h1>
+      Your services are<br>
+      <strong>on hold.</strong>
+    </h1>
+    <p>A payment is pending for your domain registration and website services. No work will continue until full payment is received.</p>
+  </div>
+
+  <!-- AMOUNT -->
+  <div class="amount-block">
+    <div>
+      <div class="amt-lbl">Amount Due</div>
+      <div class="amt-val">₹1,950.65</div>
+    </div>
+    <div class="amt-right">
+      <div class="amt-lbl">Due by</div>
+      <div class="due-date">21 June 2026</div>
+      <div class="due-sub">Pay now to resume</div>
+    </div>
+  </div>
+
+  <!-- COUNTDOWN -->
+  <div class="sec-lbl">Time Remaining</div>
+  <div class="cd-row">
+    <div class="cd-box"><span class="cd-n" id="cd-d">--</span><span class="cd-l">Days</span></div>
+    <div class="cd-box"><span class="cd-n" id="cd-h">--</span><span class="cd-l">Hours</span></div>
+    <div class="cd-box"><span class="cd-n" id="cd-m">--</span><span class="cd-l">Mins</span></div>
+    <div class="cd-box"><span class="cd-n" id="cd-s">--</span><span class="cd-l">Secs</span></div>
+  </div>
+
+  <!-- PAUSED SERVICES (styled like job rows) -->
+  <div class="sec-lbl">Services Paused</div>
+  <div class="paused-list">
+    <div class="paused-row">
+      <div><div class="paused-name">Domain Registration</div><div class="paused-sub">Registration · New Delhi · Annual</div></div>
+      <span class="paused-badge">On Hold</span>
+    </div>
+    <!-- <div class="paused-row">
+      <div><div class="paused-name">Website Development</div><div class="paused-sub">Design &amp; Code · New Delhi · Project</div></div>
+      <span class="paused-badge">On Hold</span>
+    </div> -->
+    <!-- <div class="paused-row">
+      <div><div class="paused-name">Web Hosting &amp; SSL</div><div class="paused-sub">Hosting · New Delhi · Annual</div></div>
+      <span class="paused-badge">On Hold</span>
+    </div> -->
+    <div class="paused-row">
+      <div><div class="paused-name">Business Email</div><div class="paused-sub">Email Setup · New Delhi · Annual</div></div>
+      <span class="paused-badge">On Hold</span>
+    </div>
+  </div>
+
+  <!-- UPI -->
+  <div class="sec-lbl">Pay now</div>
+  <div class="upi-wrap">
+    <div class="upi-head">
+      <span class="upi-title">UPI Payment</span>
+      <span class="instant-tag">Instant</span>
+    </div>
+    <div class="upi-body">
+      <div class="upi-id">codewithsps@ptaxis</div>
+      <div class="upi-hint">Open any UPI app, paste the ID or scan — enter ₹2,000 and complete the payment.</div>
+      <div class="copy-row">
+        <div class="copy-field">codewithsps@ptaxis</div>
+        <button class="copy-btn" onclick="copyText(this,'codewithsps@ptaxis')">Copy ID</button>
+      </div>
+      <div class="apps-row">
+        <span class="app-chip">PhonePe</span>
+        <span class="app-chip">Google Pay</span>
+        <span class="app-chip">Paytm</span>
+        <span class="app-chip">BHIM</span>
+        <span class="app-chip">Any UPI App</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- BANK -->
+  <!-- <div class="bank-wrap" style="margin-top:1rem;">
+    <div class="bank-head">Bank Transfer (NEFT / IMPS)</div>
+    <div class="bank-rows">
+      <div class="br">
+        <span class="br-k">Account Name</span>
+        <span class="br-v">Codewithsps</span>
+      </div>
+      <div class="br">
+        <span class="br-k">Bank</span>
+        <span class="br-v">State Bank of India</span>
+      </div>
+      <div class="br">
+        <span class="br-k">Account No.</span>
+        <span class="br-v">XXXX XXXX XXXX</span>
+        <button class="ic" onclick="copyText(this,'XXXXXXXXXXXX')">Copy</button>
+      </div>
+      <div class="br">
+        <span class="br-k">IFSC Code</span>
+        <span class="br-v">SBIN0XXXXXX</span>
+        <button class="ic" onclick="copyText(this,'SBIN0XXXXXX')">Copy</button>
+      </div>
+      <div class="br">
+        <span class="br-k">Amount</span>
+        <span class="br-v" style="color:#fff;font-weight:700">₹1,950.65</span>
+      </div>
+    </div>
+  </div> -->
+
+  <!-- AFTER PAY -->
+  <div class="after-note" style="margin-top:1rem;">
+    <strong>After payment —</strong> send the transaction screenshot or UTR number to
+    <a href="mailto:spswithcode@gmail.com">spswithcode@gmail.com</a> or WhatsApp at
+    <a href="https://wa.me/919616163432">+91 96161 63432</a>.
+    Services will resume within 2–4 hours of confirmation.
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="f-brand">Codewithsps</div>
+    <div class="f-links">
+      <a href="mailto:spswithcode@gmail.com">spswithcode@gmail.com</a>
+      &nbsp;·&nbsp;
+      <a href="tel:+919616163432">+91 96161 63432</a>
+      &nbsp;·&nbsp; New Delhi
+    </div>
+  </footer>
+
+</div>
+
+<script>
+   const due = new Date('2026-06-21T23:59:59');
+  function tick() {
+    const diff = due - new Date();
+    if (diff <= 0) {
+      ['cd-d','cd-h','cd-m','cd-s'].forEach(id => document.getElementById(id).textContent = '00');
+      return;
+    }
+    document.getElementById('cd-d').textContent = String(Math.floor(diff / 86400000)).padStart(2,'0');
+    document.getElementById('cd-h').textContent = String(Math.floor(diff % 86400000 / 3600000)).padStart(2,'0');
+    document.getElementById('cd-m').textContent = String(Math.floor(diff % 3600000 / 60000)).padStart(2,'0');
+    document.getElementById('cd-s').textContent = String(Math.floor(diff % 60000 / 1000)).padStart(2,'0');
+  }
+  tick();
+  setInterval(tick, 1000);
+
+  function copyText(btn, text) {
+    navigator.clipboard.writeText(text).then(() => {
+      const orig = btn.textContent;
+      btn.textContent = '✓ Copied';
+      btn.classList.add('ok');
+      setTimeout(() => { btn.textContent = orig; btn.classList.remove('ok'); }, 2000);
+    });
+  }
+</script>
+
+</body>
+</html>
